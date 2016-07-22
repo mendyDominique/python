@@ -1,0 +1,41 @@
+import os
+
+from PIL import Image
+from urlparse import urlparse
+from os.path import splitext, basename
+
+
+def test(Images, maxSize, outputName=None):
+    photo = Images
+    im = Image.open(photo)
+
+    if outputName is None:
+        disassembled = urlparse(Images)
+        filename, extn = splitext(basename(disassembled.path))
+        nomImages = filename + '_resize' + extn
+    else:
+        extn = im.format
+        nomImages = outputName + '.' + extn
+
+    longueurMax = maxSize
+    largerMax = maxSize
+    Longueur, larger = im.size
+    if Longueur >= larger:
+        largerMax = (longueurMax * larger) / Longueur
+
+    elif Longueur < larger:
+        longueurMax = (largerMax * Longueur) / larger
+
+    im = im.resize((longueurMax, largerMax), Image.ANTIALIAS)
+    im.save(nomImages, quality=95)
+
+
+def resize2(mesDictionnaire):
+    for arg in mesDictionnaire.iteritems():
+        test(arg.name, arg.size)
+
+
+tuples = [{"name": "paix.jpg", "size": 250}, {"name": "panda.png", "size": 275}, {"name": "joie.jpg", "size": 300}]
+
+test(*tuples)
+os.system("pause")
